@@ -95,6 +95,7 @@ async function getTodos() {
   } catch (err) {
     console.error("Fetch error:", err);
     showMessage("Session expired or unauthorized. Please login again.", "error");
+    localStorage.setItem('token','');
     setTimeout(() => (window.location.href = "index.html"), 1500);
   }
 }

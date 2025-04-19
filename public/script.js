@@ -1,6 +1,15 @@
 const signup = document.getElementById("signup-form");
 const signin = document.getElementById("signin-form");
 
+// checking if token is already available in local storage redirect user to todos page
+document.addEventListener("DOMContentLoaded", (e) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    window.location.href = "todos.html";
+  }
+});
+//
+
 // --- SIGNUP FORM HANDLER ---
 signup.addEventListener("submit", async (e) => {
   e.preventDefault();
