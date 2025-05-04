@@ -68,7 +68,7 @@ async function getTodos() {
     } else {
       data.todos.forEach((todo) => {
         const li = document.createElement("li");
-        li.dataset.id = todo.id;
+        li.dataset.id = todo._id.toString();
 
         li.innerHTML = `
           <span class="todo-title">${todo.title}</span>

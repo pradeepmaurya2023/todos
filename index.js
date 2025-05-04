@@ -1,13 +1,13 @@
 const express = require("express");
-const {signUp, signIn} = require('./controllers/usersController')
+const { signUp, signIn } = require("./controllers/usersController");
 require("dotenv").config(); // Make sure this is at the top
 
 // todos routes
 const todosRoutes = require("./routes/todos");
+const connectDB = require("./config/db");
 
 const app = express();
 const port = process.env.PORT || 3000;
-
 
 // Middlewares
 app.use(express.json());
@@ -22,10 +22,10 @@ app.get("/", (req, res) => {
 });
 
 // Sign up route
-app.post("/signup",signUp );
+app.post("/signup", signUp);
 
 // Sign in route
-app.post("/signin",signIn);
+app.post("/signin", signIn);
 
 // Protected route test
 // app.get("/protected", auth, (req, res) => {
@@ -35,6 +35,8 @@ app.post("/signin",signIn);
 //   });
 // });
 
+// Staring DB Connection and Server
+connectDB();
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

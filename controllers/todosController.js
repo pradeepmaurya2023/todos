@@ -1,118 +1,98 @@
-const { v4: uuidv4 } = require("uuid");
-const fs = require("fs");
-const path = require("path");
-
-let todosPath = path.join(__dirname, "../data/todos.json");
-
-// Read todos
-function readTodos() {
-  try {
-    const data = fs.readFileSync(todosPath, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.log("Error reading todos.json");
-    return [];
-  }
-}
-
-// Write todos
-function writeTodos(todos) {
-  fs.writeFileSync(todosPath, JSON.stringify(todos, null, 2), "utf-8");
-}
-
-// Load todos into memory
-let todos = readTodos();
+const Todo = require("../models/Todo");
 
 // Get all todos for logged-in user
-function getTodos(req, res) {
+async function getTodos(req, res) {
   let username = req.user.username;
-  let userSpecificTodos = todos.filter((todo) => todo.username === username);
 
-  if (userSpecificTodos.length < 1) {
-    return res.json({ msg: "No Todos Found", todos: [] });
+  try {
+    let userSpecificTodos = await Todo.find({ username: username });
+    if (userSpecificTodos.length < 1) {
+      return res.json({ msg: "No Todos Found", todos: [] });
+    }
+    res.json({
+      todos: userSpecificTodos.sort((a, b) => a.title.localeCompare(b.title)),
+    });
+  } catch (err) {
+    console.log("Error while fetching Todos ", err.message);
   }
-
-  res.json({
-    todos: userSpecificTodos.sort((a, b) => a.title.localeCompare(b.title)),
-  });
 }
 
 // Get specific todo by ID (only if it belongs to user)
-function getTodoById(req, res) {
-  let username = req.user.username;
+async function getTodoById(req, res) {
   let id = req.params.id;
 
-  let todo = todos.find((todo) => todo.id === id && todo.username === username);
-  if (!todo) {
-    return res.status(404).json({ msg: "Todo not found or unauthorized" });
+  try {
+    let todo = await Todo.findById(id);
+    if (!todo) {
+      return res.status(404).json({ msg: "Todo not found or unauthorized" });
+    }
+    res.json({ ...todo });
+  } catch (err) {
+    console.log("Error while fetching Todo By ID ", err.message);
   }
-  res.json({ ...todo });
 }
 
 // Add a new todo
-function addTodo(req, res) {
+async function addTodo(req, res) {
   const { title, completed } = req.body;
   const username = req.user.username;
-  const id = uuidv4();
-
-  if (typeof title === "string" && typeof completed === "boolean") {
-    todos.push({
-      id,
-      username,
-      title,
-      completed,
-    });
-    writeTodos(todos);
-    res.json({ msg: "Todo added successfully" });
-  } else {
-    res.status(400).json({ msg: "Title and Completed must be valid" });
+  try {
+    if (typeof title === "string" && typeof completed === "boolean") {
+      let todo = new Todo({
+        username,
+        title,
+        completed,
+      });
+      await todo.save();
+      res.json({ msg: "Todo added successfully" });
+    } else {
+      res.status(400).json({ msg: "Title and Completed must be valid" });
+    }
+  } catch (err) {
+    console.log("Error while Adding a Todo", err.message);
   }
 }
 
 // Update a todo
-function updateTodoById(req, res) {
+async function updateTodoById(req, res) {
   const id = req.params.id;
   const username = req.user.username;
   const { title, completed } = req.body;
-
-  let todoFound = false;
-
-  todos.forEach((todo) => {
-    if (todo.id === id && todo.username === username) {
-      if (title !== undefined) todo.title = title;
-      if (completed !== undefined) todo.completed = completed;
-      todoFound = true;
+  try {
+    let updatedTodo = await Todo.findByIdAndUpdate(id, {
+      title: title,
+      completed: completed,
+    });
+    if (!updatedTodo) {
+      console.log("User not found");
+    } else {
+      console.log("Updated User:", updatedTodo);
+      res.json({ msg: "Todo updated successfully" });
     }
-  });
-
-  if (!todoFound) {
-    return res.status(404).json({ msg: "Todo not found or unauthorized" });
+  } catch (err) {
+    console.error("Error updating user:", err.message);
   }
-
-  writeTodos(todos);
-  res.json({ msg: "Todo updated successfully" });
 }
 
 // Delete a todo
-function deleteTodoById(req, res) {
+async function deleteTodoById(req, res) {
   const id = req.params.id;
-  const username = req.user.username;
+  try {
+    let deletedTodo = await Todo.findByIdAndDelete(id);
 
-  const updatedTodos = todos.filter(
-    (todo) => !(todo.id === id && todo.username === username)
-  );
+    if (!deletedTodo) {
+      console.log("Todo not found");
+    } else {
+      console.log("Todo Deleted Successfully");
 
-  if (updatedTodos.length === todos.length) {
-    return res.status(404).json({ msg: "Todo not found or unauthorized" });
+      res.json({ msg: "Todo deleted successfully" });
+    }
+  } catch (err) {
+    console.log("Error while Deleting Todo", err.message);
   }
-
-  todos = updatedTodos;
-  writeTodos(todos);
-  res.json({ msg: "Todo deleted successfully" });
 }
 
 module.exports = {
-  readTodos,
   getTodos,
   getTodoById,
   addTodo,

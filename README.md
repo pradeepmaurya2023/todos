@@ -13,7 +13,7 @@ A full-stack ToDo application that allows users to sign up, log in, and manage t
 - 🔓 Logout Functionality
 - 💬 Inline Status/Info/Error Messages
 - 💾 Session management via localStorage
-- 🧾 Todos stored in JSON files (simple backend)
+- 🧾 Todos stored in mongoose
 
 ---
 
@@ -29,7 +29,7 @@ A full-stack ToDo application that allows users to sign up, log in, and manage t
 - Express.js  
 
 **Storage**  
-- JSON files for users and todos  
+- Mongoose || MongoDB
 
 ---
 
