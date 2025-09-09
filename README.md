@@ -38,12 +38,12 @@ A full-stack ToDo application that allows users to sign up, log in, and manage t
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/pradeepmaurya2023/todo-app.git
+git clone https://github.com/pradeepmaurya2023/todos.git
 ```
 ### 2. Navigate to the Project Folder
 
 ```bash
-cd todo-app
+cd todos
 ```
 ### 3. Install Dependencies
 ```bash
