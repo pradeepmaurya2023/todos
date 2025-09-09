@@ -38,7 +38,7 @@ A full-stack ToDo application that allows users to sign up, log in, and manage t
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/todo-app.git
+git clone https://github.com/pradeepmaurya2023/todo-app.git
 ```
 ### 2. Navigate to the Project Folder
 
@@ -46,11 +46,6 @@ git clone https://github.com/your-username/todo-app.git
 cd todo-app
 ```
 ### 3. Install Dependencies
-```bash
-git clone https://github.com/your-username/todo-app.git
-```
-### 1. Clone the Repository
-
 ```bash
 npm install
 ```
